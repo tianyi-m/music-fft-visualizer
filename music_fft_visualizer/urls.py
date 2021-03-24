@@ -16,12 +16,14 @@ Including another URLconf
 from django.contrib import admin
 from django.urls import path
 from django.conf.urls.static import static
+from django.conf import settings
 
 from MusicVisualizer import views
 
 urlpatterns = [
     path('MusicVisualizer/upload/', views.uploadSong, name='upload_song'),
-    path('MusicVisualizer/', views.lastSong, name='last_song'),
+    path('MusicVisualizer/', views.lastSong, name='play_last_song'),
+    path('MusicVisualizer/processed', views.processSong, name='process_song'),
 ]
 
 if settings.DEBUG:  # remember to set 'DEBUG = True' in settings.py

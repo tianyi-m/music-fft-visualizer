@@ -6,5 +6,5 @@ from .models import MusicVisualizer
 class MusicVisualizerForm(forms.ModelForm):
 
     class Meta:
-        model = Tutorial
+        model = MusicVisualizer
         fields = ['song']
