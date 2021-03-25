@@ -6,13 +6,12 @@
 </head>
 <body>
 	{% if MusicVisualizer %}
-	<audio controls id='song'>
-		<source src='{{  MusicVisualizer.song.url }}'>
-	</audio>
+	<audio controls id='song' src='{{  MusicVisualizer.song.url }}'></audio>
 	{% endif %}
 	<form action='upload' method='GET'>
 		<button href="{% url 'upload_song' %}">back</button>
 	</form>
+	Please wait for a few second for the visualizer to prepare.
 	<canvas id="MusicVisualizerCanvas"></canvas>
 	{% load static %}
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
