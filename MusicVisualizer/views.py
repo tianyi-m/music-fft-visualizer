@@ -25,15 +25,23 @@ def uploadSong(request):
         form = MusicVisualizerForm()
     return render(request, 'uploadSong.html', {'form' : form})
 
+y = []
+sr = 0
+loaded = False
 def processSong(request):
     song_url = request.POST['song_url']
     window_ms = int(request.POST['window_ms'])
-    y, sr = librosa.core.load(song_url)
-    y = y[:10000]
-    spectgram = spectrogram(y, sr, window_ms/2, window_ms)
-    wave_amp_var = wave_amp(y, sr, window_ms)
-    data = {'spectgram':spectgram.tolist(), 'wave_amp':wave_amp_var.tolist()}
-    print('done')
+    startSec = int(request.POST['startSec'])
+    duration = float(request.POST['duration'])
+    if not loaded:
+        y, sr = librosa.core.load(song_url)
+    start = startSec * sr
+    end = start + duration * sr
+    y_seg = y[start:end]
+    spectgram = spectrogram(y_seg, sr, window_ms/2, window_ms)
+    wave_amp_var = wave_amp(y_seg, sr, window_ms)
+    data = {'spectgram':spectgram.transpose().tolist(), 'wave_amp':wave_amp_var.transpose().tolist(), 'ymax':max(y)}
+    print('done', startSec)
     return JsonResponse(data)
 
 def spectrogram(samples, sample_rate, stride_ms = 25.0, 
