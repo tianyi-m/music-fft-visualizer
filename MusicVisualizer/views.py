@@ -33,14 +33,18 @@ def processSong(request):
     window_ms = int(request.POST['window_ms'])
     startSec = int(request.POST['startSec'])
     duration = float(request.POST['duration'])
+    canPlay = False
     if not loaded:
         y, sr = librosa.core.load(song_url)
     start = startSec * sr
-    end = start + duration * sr
+    end = min(int(start + duration * sr), len(y)-1)
+    if (end == len(y)-1):
+        canPlay = True
+    print(start, end)
     y_seg = y[start:end]
     spectgram = spectrogram(y_seg, sr, window_ms/2, window_ms)
     wave_amp_var = wave_amp(y_seg, sr, window_ms)
-    data = {'spectgram':spectgram.transpose().tolist(), 'wave_amp':wave_amp_var.transpose().tolist(), 'ymax':max(y)}
+    data = {'spectgram':spectgram.transpose().tolist(), 'wave_amp':wave_amp_var.transpose().tolist(), 'ymax':str(max(y)), 'canPlay':canPlay}
     print('done', startSec)
     return JsonResponse(data)
 
@@ -57,6 +61,7 @@ def spectrogram(samples, sample_rate, stride_ms = 25.0,
     total_seg = (len(samples) - window_size) // stride_size + 1
     nshape = (window_size, total_seg)
     nstrides = (samples.strides[0], samples.strides[0] * stride_size)
+    print(nshape, nstrides)
     windows = np.lib.stride_tricks.as_strided(samples, 
                                           shape = nshape, strides = nstrides)
     
