@@ -7,6 +7,7 @@ let ymax = 0
 let stride_size = 0
 let x_interval = 0
 let window_ms = 50
+let sr = 0
 let song_url = audio.src
 song_url = song_url.split('0/')[1]
 
@@ -62,7 +63,7 @@ $.ajaxSetup({
 
 let canPlay = false
 let canPlay_buff = false
-let duration = 30
+let duration = 10
 let audio_duration = audio.duration
 
 audio.addEventListener('canplaythrough', function(){
@@ -100,17 +101,17 @@ function visualizeMusic(){
 function paintFreq(time_idx){
 	//console.log(time_idx)
 	let freq = spectgram[time_idx]
-	let bins_num = freq.length
+	let bins_num = Math.floor(800/(sr/2/freq.length))
 	let width = context.canvas.width
 	let height = context.canvas.height
 	let bin_len = width / bins_num
 	console.log(freq.length, bin_len)
+	let scale = 500 / Math.max.apply(Math, freq);
 	for (let x = 0; x < bins_num; x++){
 		//console.log('paintFreq')
-		let scale = 500 / Math.max(freq)
 		let amp = Math.floor(freq[x] * scale)
 		context.fillStyle = 'black';
-		console.log(x * bin_len, amp, scale, freq[x], height - amp, bin_len, height)
+		console.log(scale, Math.max.apply(Math, freq), freq[x], height - amp)
 		context.fillRect(x * bin_len, height - amp, bin_len, height);
 	}
 }
@@ -199,6 +200,7 @@ function storeData(response){
 	ymax = parseFloat(response['ymax'])
 	stride_size = spectgram[0].length
 	canPlay_buff = response['canPlay']
+	sr = parseInt(sr)
 	console.log(canPlay)
 	if (canPlay_buff){
 		canPlay = canPlay_buff
